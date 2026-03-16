@@ -50,7 +50,7 @@ public class McpServer
         }
     }
 
-    private async Task<JsonRpcResponse?> HandleRequestAsync(JsonRpcRequest request)
+    public async Task<JsonRpcResponse?> HandleRequestAsync(JsonRpcRequest request)
     {
         try
         {
