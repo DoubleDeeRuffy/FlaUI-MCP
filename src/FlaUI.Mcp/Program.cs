@@ -1,10 +1,18 @@
+using System.Diagnostics;
+using System.ServiceProcess;
 using NLog;
+using Skoosoft.ServiceHelperLib;
+using Skoosoft.Windows.Manager;
 using FlaUI.Mcp.Logging;
 using PlaywrightWindows.Mcp;
 using PlaywrightWindows.Mcp.Core;
 using PlaywrightWindows.Mcp.Tools;
 
-// Parse command-line arguments — boolean flags via joined parameter string
+// === Constants ===
+const string ServiceName = "FlaUI-MCP";
+const string FirewallRuleName = "FlaUI-MCP";
+
+// === 1. Parse command-line arguments — boolean flags via joined parameter string ===
 var parameter = string.Join(" ", args).ToLower();
 var silent = parameter.Contains("-silent") || parameter.Contains("-s");
 var debug = parameter.Contains("-debug") || parameter.Contains("-d");
@@ -29,14 +37,84 @@ for (int i = 0; i < args.Length; i++)
     }
 }
 
-// Logging startup sequence
+// === 2. Console window sizing (SVC-11) ===
+if (!Debugger.IsAttached && Environment.UserInteractive)
+{
+    try
+    {
+        Console.BufferWidth = 180;
+        Console.WindowWidth = 180;
+        Console.WindowHeight = 50;
+    }
+    catch
+    {
+        // Ignore - redirected output or Windows Terminal
+    }
+}
+
+// === 3. CleanOldLogfiles() ===
 var logDirectory = LoggingConfig.LogDirectory;
 LogArchiver.CleanOldLogfiles(logDirectory);
+
+// === 4. ConfigureLogging(debug) ===
 LoggingConfig.ConfigureLogging(debug, logDirectory, enableConsoleTarget: transport == "sse");
-var logger = LogManager.GetCurrentClassLogger();
+
+// === 5. Get logger ===
+Logger? logger = LogManager.GetCurrentClassLogger();
 logger.Info("FlaUI-MCP starting (transport={transport}, debug={debug})", transport, debug);
 
-// Create shared services
+// === 6. Unhandled exception handler (SVC-09) ===
+AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+{
+    logger?.Error(e.ExceptionObject as Exception, "Unhandled exception");
+};
+
+// === 7. Firewall rule (SVC-07) — only for SSE transport ===
+var exeFilePath = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName ?? "";
+if (transport == "sse")
+{
+    if (!FirewallManager.CheckRule(FirewallRuleName))
+        FirewallManager.SetRule(FirewallRuleName, exeFilePath);
+}
+
+// === 8. Stop running service before console mode (SVC-08) ===
+if (Environment.UserInteractive)
+{
+    if (ServiceManager.DoesServiceExist(ServiceName))
+    {
+        try
+        {
+            var service = new ServiceController(ServiceName);
+            if (service.Status == ServiceControllerStatus.Running)
+            {
+                service.Stop();
+                service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+            }
+        }
+        catch (Exception ex)
+        {
+            logger?.Error(ex, "Failed to stop running service");
+        }
+    }
+}
+
+// === 9. Install or Uninstall service (SVC-01, SVC-02, SVC-03, SVC-06) ===
+if (install)
+{
+    ServiceManager.Install(ServiceName, exeFilePath, silent);
+    // Firewall rule also created during install (if SSE)
+    if (!FirewallManager.CheckRule(FirewallRuleName))
+        FirewallManager.SetRule(FirewallRuleName, exeFilePath);
+    Environment.Exit(0);
+}
+
+if (uninstall)
+{
+    ServiceManager.Uninstall(ServiceName, silent);
+    Environment.Exit(0);
+}
+
+// === 10. Create shared services and run ===
 var sessionManager = new SessionManager();
 var elementRegistry = new ElementRegistry();
 
@@ -75,6 +153,11 @@ try
     {
         await server.RunAsync(cts.Token);
     }
+}
+catch (Exception ex)
+{
+    logger?.Error(ex, "Main exception");
+    throw;
 }
 finally
 {
