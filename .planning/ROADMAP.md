@@ -12,7 +12,7 @@ This milestone adds production-grade logging and Windows Service support to the 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Logging Infrastructure** - Programmatic NLog setup with file/console targets, archiving, and ASP.NET Core integration
+- [x] **Phase 1: Logging Infrastructure** - Programmatic NLog setup with file/console targets, archiving, and ASP.NET Core integration (completed 2026-03-17)
 - [ ] **Phase 2: Service Hardening** - CLI flags, Windows Service install/uninstall, firewall rule, startup sequence, and crash safety
 
 ## Phase Details
@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. On startup, any existing .log files from the previous session are zipped into a timestamped archive, and archives beyond the 10-file limit are deleted
   4. Log output contains no System.* or Microsoft.* entries below Warn level
   5. All log write calls are async and LogManager.Shutdown() is called on application exit
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 1-01-PLAN.md — NLog packages, LogArchiver (archive/rotation), LoggingConfig (programmatic targets)
 - [ ] 1-02-PLAN.md — Wire logging into Program.cs, McpServer, SseTransport; -debug flag; ASP.NET Core integration
@@ -54,5 +54,5 @@ Phases execute in numeric order: 1 -> 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Logging Infrastructure | 1/2 | In Progress|  |
+| 1. Logging Infrastructure | 2/2 | Complete   | 2026-03-17 |
 | 2. Service Hardening | 0/2 | Not started | - |

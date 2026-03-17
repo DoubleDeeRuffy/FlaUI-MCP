@@ -8,17 +8,17 @@
 ### Logging
 
 - [x] **LOG-01**: NLog configured programmatically (no XML config files)
-- [ ] **LOG-02**: Error.log always active at Error level
-- [ ] **LOG-03**: Debug.log active only when `-debug`/`-d` flag is set
+- [x] **LOG-02**: Error.log always active at Error level
+- [x] **LOG-03**: Debug.log active only when `-debug`/`-d` flag is set
 - [x] **LOG-04**: All file targets use async writes
 - [x] **LOG-05**: Standard file layout with longdate, level, callsite, message, exception
 - [x] **LOG-06**: Console layout with time and namespace stripping
-- [ ] **LOG-07**: Framework noise suppressed (System.*, Microsoft.* to Warn)
-- [ ] **LOG-08**: ASP.NET Core integrated via ClearProviders + UseNLog
+- [x] **LOG-07**: Framework noise suppressed (System.*, Microsoft.* to Warn)
+- [x] **LOG-08**: ASP.NET Core integrated via ClearProviders + UseNLog
 - [x] **LOG-09**: Log archive on startup — zip previous .log files with timestamp
 - [x] **LOG-10**: Archive rotation — keep max 10 zips, delete oldest
-- [ ] **LOG-11**: Static logger per class pattern
-- [ ] **LOG-12**: LogManager.Shutdown() in finally block
+- [x] **LOG-11**: Static logger per class pattern
+- [x] **LOG-12**: LogManager.Shutdown() in finally block
 
 ### Service
 
@@ -53,17 +53,17 @@ None planned.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | LOG-01 | Phase 1 | Complete |
-| LOG-02 | Phase 1 | Pending |
-| LOG-03 | Phase 1 | Pending |
+| LOG-02 | Phase 1 | Complete |
+| LOG-03 | Phase 1 | Complete |
 | LOG-04 | Phase 1 | Complete |
 | LOG-05 | Phase 1 | Complete |
 | LOG-06 | Phase 1 | Complete |
-| LOG-07 | Phase 1 | Pending |
-| LOG-08 | Phase 1 | Pending |
+| LOG-07 | Phase 1 | Complete |
+| LOG-08 | Phase 1 | Complete |
 | LOG-09 | Phase 1 | Complete |
 | LOG-10 | Phase 1 | Complete |
-| LOG-11 | Phase 1 | Pending |
-| LOG-12 | Phase 1 | Pending |
+| LOG-11 | Phase 1 | Complete |
+| LOG-12 | Phase 1 | Complete |
 | SVC-01 | Phase 2 | Pending |
 | SVC-02 | Phase 2 | Pending |
 | SVC-03 | Phase 2 | Pending |

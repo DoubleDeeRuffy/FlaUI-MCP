@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 1-logging-infrastructure plan 01 (NLog infrastructure)
-last_updated: "2026-03-17T19:37:30.079Z"
+stopped_at: Completed 1-logging-infrastructure plan 02 (NLog wiring)
+last_updated: "2026-03-17T19:41:08.546Z"
 last_activity: 2026-03-17 — Roadmap created
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 1-logging-infrastructure P01 | 2 | 2 tasks | 3 files |
+| Phase 1-logging-infrastructure P02 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - NLog config must be programmatic only — no XML files
 - [Phase 1-logging-infrastructure]: Log directory is app-local (AppContext.BaseDirectory/Log) — portable, no system path dependency
 - [Phase 1-logging-infrastructure]: ConfigureLogging takes enableConsoleTarget bool; caller passes transport==sse — simpler than transport-type enum
+- [Phase 1-logging-infrastructure]: enableConsoleTarget passed as transport==sse expression — stdio mode stdout stays clean for JSON-RPC
+- [Phase 1-logging-infrastructure]: LogManager.Shutdown() before sessionManager.Dispose() in finally block — log flush completes before resources released
 
 ### Pending Todos
 
@@ -76,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T19:37:30.076Z
-Stopped at: Completed 1-logging-infrastructure plan 01 (NLog infrastructure)
+Last session: 2026-03-17T19:41:08.542Z
+Stopped at: Completed 1-logging-infrastructure plan 02 (NLog wiring)
 Resume file: None
