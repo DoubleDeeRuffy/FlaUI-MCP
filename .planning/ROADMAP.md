@@ -27,7 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. On startup, any existing .log files from the previous session are zipped into a timestamped archive, and archives beyond the 10-file limit are deleted
   4. Log output contains no System.* or Microsoft.* entries below Warn level
   5. All log write calls are async and LogManager.Shutdown() is called on application exit
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 1-01-PLAN.md — NLog packages, LogArchiver (archive/rotation), LoggingConfig (programmatic targets)
+- [ ] 1-02-PLAN.md — Wire logging into Program.cs, McpServer, SseTransport; -debug flag; ASP.NET Core integration
 
 ### Phase 2: Service Hardening
 **Goal**: The server installs and runs as a managed Windows Service with full CLI control, firewall rule creation, port-conflict prevention, and crash logging
@@ -48,5 +51,5 @@ Phases execute in numeric order: 1 → 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Logging Infrastructure | 0/TBD | Not started | - |
+| 1. Logging Infrastructure | 0/2 | Not started | - |
 | 2. Service Hardening | 0/TBD | Not started | - |
