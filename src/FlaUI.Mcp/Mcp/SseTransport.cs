@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Web;
 
 namespace PlaywrightWindows.Mcp;
 
@@ -14,6 +17,7 @@ namespace PlaywrightWindows.Mcp;
 /// </summary>
 public class SseTransport
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly McpServer _server;
     private readonly int _port;
     private readonly ConcurrentDictionary<string, SseClient> _clients = new();
@@ -27,6 +31,9 @@ public class SseTransport
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         var builder = WebApplication.CreateBuilder();
+        builder.Logging.ClearProviders();
+        builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+        builder.Host.UseNLog();
         builder.WebHost.UseUrls($"http://0.0.0.0:{_port}");
 
         var app = builder.Build();
@@ -110,9 +117,9 @@ public class SseTransport
             await context.Response.WriteAsync("Accepted");
         });
 
-        Console.Error.WriteLine($"FlaUI-MCP SSE server listening on http://0.0.0.0:{_port}");
-        Console.Error.WriteLine($"  SSE endpoint:     GET  http://localhost:{_port}/sse");
-        Console.Error.WriteLine($"  Message endpoint:  POST http://localhost:{_port}/messages?sessionId=<id>");
+        Logger.Info("FlaUI-MCP SSE server listening on http://0.0.0.0:{Port}", _port);
+        Logger.Info("  SSE endpoint:     GET  http://localhost:{Port}/sse", _port);
+        Logger.Info("  Message endpoint:  POST http://localhost:{Port}/messages?sessionId=<id>", _port);
 
         await app.RunAsync(cancellationToken);
     }

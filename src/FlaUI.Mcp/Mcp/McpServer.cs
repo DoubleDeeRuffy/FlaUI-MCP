@@ -1,4 +1,5 @@
 using System.Text.Json;
+using NLog;
 
 namespace PlaywrightWindows.Mcp;
 
@@ -7,6 +8,7 @@ namespace PlaywrightWindows.Mcp;
 /// </summary>
 public class McpServer
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly ToolRegistry _toolRegistry;
     private bool _initialized = false;
 
@@ -21,9 +23,6 @@ public class McpServer
         using var stdout = Console.OpenStandardOutput();
         using var reader = new StreamReader(stdin);
         using var writer = new StreamWriter(stdout) { AutoFlush = true };
-
-        // Redirect stderr for logging (MCP servers should not write to stdout except JSON-RPC)
-        Console.SetError(new StreamWriter(Console.OpenStandardError()) { AutoFlush = true });
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -45,7 +44,7 @@ public class McpServer
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error processing request: {ex.Message}");
+                Logger.Error(ex, "Error processing request");
             }
         }
     }
