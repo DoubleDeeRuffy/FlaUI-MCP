@@ -4,10 +4,17 @@ using PlaywrightWindows.Mcp;
 using PlaywrightWindows.Mcp.Core;
 using PlaywrightWindows.Mcp.Tools;
 
-// Parse command-line arguments
-var transport = "stdio";
+// Parse command-line arguments — boolean flags via joined parameter string
+var parameter = string.Join(" ", args).ToLower();
+var silent = parameter.Contains("-silent") || parameter.Contains("-s");
+var debug = parameter.Contains("-debug") || parameter.Contains("-d");
+var install = parameter.Contains("-install") || parameter.Contains("-i");
+var uninstall = parameter.Contains("-uninstall") || parameter.Contains("-u");
+var console = parameter.Contains("-console") || parameter.Contains("-c");
+
+// Parse value arguments via for-loop
+var transport = "sse";
 var port = 8080;
-var debug = false;
 
 for (int i = 0; i < args.Length; i++)
 {
@@ -18,10 +25,6 @@ for (int i = 0; i < args.Length; i++)
             break;
         case "--port" when i + 1 < args.Length:
             if (int.TryParse(args[++i], out var p)) port = p;
-            break;
-        case "-debug":
-        case "-d":
-            debug = true;
             break;
     }
 }
