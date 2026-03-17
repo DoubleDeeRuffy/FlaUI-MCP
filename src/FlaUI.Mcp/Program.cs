@@ -1,3 +1,5 @@
+using NLog;
+using FlaUI.Mcp.Logging;
 using PlaywrightWindows.Mcp;
 using PlaywrightWindows.Mcp.Core;
 using PlaywrightWindows.Mcp.Tools;
@@ -5,6 +7,7 @@ using PlaywrightWindows.Mcp.Tools;
 // Parse command-line arguments
 var transport = "stdio";
 var port = 8080;
+var debug = false;
 
 for (int i = 0; i < args.Length; i++)
 {
@@ -16,8 +19,19 @@ for (int i = 0; i < args.Length; i++)
         case "--port" when i + 1 < args.Length:
             if (int.TryParse(args[++i], out var p)) port = p;
             break;
+        case "-debug":
+        case "-d":
+            debug = true;
+            break;
     }
 }
+
+// Logging startup sequence
+var logDirectory = LoggingConfig.LogDirectory;
+LogArchiver.CleanOldLogfiles(logDirectory);
+LoggingConfig.ConfigureLogging(debug, logDirectory, enableConsoleTarget: transport == "sse");
+var logger = LogManager.GetCurrentClassLogger();
+logger.Info("FlaUI-MCP starting (transport={transport}, debug={debug})", transport, debug);
 
 // Create shared services
 var sessionManager = new SessionManager();
@@ -61,5 +75,6 @@ try
 }
 finally
 {
+    LogManager.Shutdown();
     sessionManager.Dispose();
 }
