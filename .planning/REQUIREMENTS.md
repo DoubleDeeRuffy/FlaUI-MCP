@@ -7,16 +7,16 @@
 
 ### Logging
 
-- [ ] **LOG-01**: NLog configured programmatically (no XML config files)
+- [x] **LOG-01**: NLog configured programmatically (no XML config files)
 - [ ] **LOG-02**: Error.log always active at Error level
 - [ ] **LOG-03**: Debug.log active only when `-debug`/`-d` flag is set
-- [ ] **LOG-04**: All file targets use async writes
-- [ ] **LOG-05**: Standard file layout with longdate, level, callsite, message, exception
-- [ ] **LOG-06**: Console layout with time and namespace stripping
+- [x] **LOG-04**: All file targets use async writes
+- [x] **LOG-05**: Standard file layout with longdate, level, callsite, message, exception
+- [x] **LOG-06**: Console layout with time and namespace stripping
 - [ ] **LOG-07**: Framework noise suppressed (System.*, Microsoft.* to Warn)
 - [ ] **LOG-08**: ASP.NET Core integrated via ClearProviders + UseNLog
-- [ ] **LOG-09**: Log archive on startup — zip previous .log files with timestamp
-- [ ] **LOG-10**: Archive rotation — keep max 10 zips, delete oldest
+- [x] **LOG-09**: Log archive on startup — zip previous .log files with timestamp
+- [x] **LOG-10**: Archive rotation — keep max 10 zips, delete oldest
 - [ ] **LOG-11**: Static logger per class pattern
 - [ ] **LOG-12**: LogManager.Shutdown() in finally block
 
@@ -52,16 +52,16 @@ None planned.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOG-01 | Phase 1 | Pending |
+| LOG-01 | Phase 1 | Complete |
 | LOG-02 | Phase 1 | Pending |
 | LOG-03 | Phase 1 | Pending |
-| LOG-04 | Phase 1 | Pending |
-| LOG-05 | Phase 1 | Pending |
-| LOG-06 | Phase 1 | Pending |
+| LOG-04 | Phase 1 | Complete |
+| LOG-05 | Phase 1 | Complete |
+| LOG-06 | Phase 1 | Complete |
 | LOG-07 | Phase 1 | Pending |
 | LOG-08 | Phase 1 | Pending |
-| LOG-09 | Phase 1 | Pending |
-| LOG-10 | Phase 1 | Pending |
+| LOG-09 | Phase 1 | Complete |
+| LOG-10 | Phase 1 | Complete |
 | LOG-11 | Phase 1 | Pending |
 | LOG-12 | Phase 1 | Pending |
 | SVC-01 | Phase 2 | Pending |

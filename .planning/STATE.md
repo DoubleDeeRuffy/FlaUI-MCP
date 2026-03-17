@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-17T18:14:51.476Z"
+stopped_at: Completed 1-logging-infrastructure plan 01 (NLog infrastructure)
+last_updated: "2026-03-17T19:37:30.079Z"
 last_activity: 2026-03-17 — Roadmap created
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 4
+  completed_plans: 1
   percent: 0
 ---
 
@@ -50,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 1-logging-infrastructure P01 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,8 @@ Recent decisions affecting current work:
 - Service name: FlaUI-MCP
 - Skoosoft NuGet packages for service/firewall (ServiceHelperLib + Windows.Manager)
 - NLog config must be programmatic only — no XML files
+- [Phase 1-logging-infrastructure]: Log directory is app-local (AppContext.BaseDirectory/Log) — portable, no system path dependency
+- [Phase 1-logging-infrastructure]: ConfigureLogging takes enableConsoleTarget bool; caller passes transport==sse — simpler than transport-type enum
 
 ### Pending Todos
 
@@ -73,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T18:14:51.472Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/1-logging-infrastructure/1-CONTEXT.md
+Last session: 2026-03-17T19:37:30.076Z
+Stopped at: Completed 1-logging-infrastructure plan 01 (NLog infrastructure)
+Resume file: None
