@@ -13,7 +13,7 @@ This milestone adds production-grade logging and Windows Service support to the 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Logging Infrastructure** - Programmatic NLog setup with file/console targets, archiving, and ASP.NET Core integration (completed 2026-03-17)
-- [ ] **Phase 2: Service Hardening** - CLI flags, Windows Service install/uninstall, firewall rule, startup sequence, and crash safety
+- [x] **Phase 2: Service Hardening** - CLI flags, Windows Service install/uninstall, firewall rule, startup sequence, and crash safety (completed 2026-03-17)
 
 ## Phase Details
 
@@ -42,7 +42,7 @@ Plans:
   3. Running with `-console` stops any already-running FlaUI-MCP service first, then starts the server in the console without port conflicts
   4. An unhandled exception causes a log entry to appear in Error.log before the process terminates
   5. The startup sequence executes in the defined order: CleanOldLogfiles, ConfigureLogging, Firewall, StopRunning, Install/Uninstall/Run
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 2-01-PLAN.md — NuGet packages + unified CLI argument parsing + default transport change
 - [ ] 2-02-PLAN.md — Complete service lifecycle: startup sequence, firewall, install/uninstall, crash handler
@@ -55,4 +55,4 @@ Phases execute in numeric order: 1 -> 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Logging Infrastructure | 2/2 | Complete    | 2026-03-17 |
-| 2. Service Hardening | 0/2 | Not started | - |
+| 2. Service Hardening | 2/2 | Complete   | 2026-03-17 |

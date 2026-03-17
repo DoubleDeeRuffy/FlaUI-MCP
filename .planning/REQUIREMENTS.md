@@ -22,17 +22,17 @@
 
 ### Service
 
-- [ ] **SVC-01**: CLI flag `-install`/`-i` installs as Windows Service via Skoosoft.ServiceHelperLib
-- [ ] **SVC-02**: CLI flag `-uninstall`/`-u` uninstalls Windows Service
-- [ ] **SVC-03**: CLI flag `-silent`/`-s` suppresses user prompts during install/uninstall
+- [x] **SVC-01**: CLI flag `-install`/`-i` installs as Windows Service via Skoosoft.ServiceHelperLib
+- [x] **SVC-02**: CLI flag `-uninstall`/`-u` uninstalls Windows Service
+- [x] **SVC-03**: CLI flag `-silent`/`-s` suppresses user prompts during install/uninstall
 - [ ] **SVC-04**: CLI flag `-debug`/`-d` enables debug-level logging
 - [ ] **SVC-05**: CLI flag `-console`/`-c` runs in console mode
-- [ ] **SVC-06**: Install/Uninstall calls Environment.Exit(0) — does not continue to WebApp
-- [ ] **SVC-07**: Firewall rule created via Skoosoft.Windows.Manager if not existing
-- [ ] **SVC-08**: Stop running service before console mode to avoid port conflicts
-- [ ] **SVC-09**: Unhandled exception handler on AppDomain logs before crash
-- [ ] **SVC-10**: Proper startup sequence per convention
-- [ ] **SVC-11**: Console window sizing when running interactively
+- [x] **SVC-06**: Install/Uninstall calls Environment.Exit(0) — does not continue to WebApp
+- [x] **SVC-07**: Firewall rule created via Skoosoft.Windows.Manager if not existing
+- [x] **SVC-08**: Stop running service before console mode to avoid port conflicts
+- [x] **SVC-09**: Unhandled exception handler on AppDomain logs before crash
+- [x] **SVC-10**: Proper startup sequence per convention
+- [x] **SVC-11**: Console window sizing when running interactively
 
 ## v2 Requirements
 
@@ -64,17 +64,17 @@ None planned.
 | LOG-10 | Phase 1 | Complete |
 | LOG-11 | Phase 1 | Complete |
 | LOG-12 | Phase 1 | Complete |
-| SVC-01 | Phase 2 | Pending |
-| SVC-02 | Phase 2 | Pending |
-| SVC-03 | Phase 2 | Pending |
+| SVC-01 | Phase 2 | Complete |
+| SVC-02 | Phase 2 | Complete |
+| SVC-03 | Phase 2 | Complete |
 | SVC-04 | Phase 2 | Pending |
 | SVC-05 | Phase 2 | Pending |
-| SVC-06 | Phase 2 | Pending |
-| SVC-07 | Phase 2 | Pending |
-| SVC-08 | Phase 2 | Pending |
-| SVC-09 | Phase 2 | Pending |
-| SVC-10 | Phase 2 | Pending |
-| SVC-11 | Phase 2 | Pending |
+| SVC-06 | Phase 2 | Complete |
+| SVC-07 | Phase 2 | Complete |
+| SVC-08 | Phase 2 | Complete |
+| SVC-09 | Phase 2 | Complete |
+| SVC-10 | Phase 2 | Complete |
+| SVC-11 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 23 total

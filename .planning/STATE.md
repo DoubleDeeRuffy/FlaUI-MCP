@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Completed 1-logging-infrastructure plan 02 (NLog wiring)
-last_updated: "2026-03-17T20:29:01.311Z"
-last_activity: 2026-03-17 — Roadmap created
+status: executing
+stopped_at: Completed 2-02-PLAN.md (service lifecycle)
+last_updated: "2026-03-17T20:44:15.142Z"
+last_activity: 2026-03-17 — Completed 2-01 (NuGet packages + CLI parsing)
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 2
-  percent: 0
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** MCP server reliably automates Windows desktop applications via accessibility APIs — logging and service support ensure it runs unattended with full observability
-**Current focus:** Phase 1 — Logging Infrastructure
+**Current focus:** Phase 2 — Service Hardening
 
 ## Current Position
 
-Phase: 1 of 2 (Logging Infrastructure)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-17 — Roadmap created
+Phase: 2 of 2 (Service Hardening)
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-03-17 — Completed 2-02 (service lifecycle)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -52,6 +52,8 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 1-logging-infrastructure P01 | 2 | 2 tasks | 3 files |
 | Phase 1-logging-infrastructure P02 | 5 | 2 tasks | 3 files |
+| Phase 2-service-hardening P01 | 3 | 2 tasks | 2 files |
+| Phase 2-service-hardening P02 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -68,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 1-logging-infrastructure]: ConfigureLogging takes enableConsoleTarget bool; caller passes transport==sse — simpler than transport-type enum
 - [Phase 1-logging-infrastructure]: enableConsoleTarget passed as transport==sse expression — stdio mode stdout stays clean for JSON-RPC
 - [Phase 1-logging-infrastructure]: LogManager.Shutdown() before sessionManager.Dispose() in finally block — log flush completes before resources released
+- [Phase 2-service-hardening]: NuGet package name is Skoosoft.Windows (not Skoosoft.Windows.Manager) -- namespace differs from package ID
+- [Phase 2-service-hardening]: Default transport changed from stdio to sse -- SSE is the primary usage pattern
+- [Phase 2-service-hardening]: Used Environment.UserInteractive instead of WindowsServiceHelpers.IsWindowsService() to avoid extra NuGet dependency
 
 ### Pending Todos
 
@@ -79,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T19:41:08.542Z
-Stopped at: Completed 1-logging-infrastructure plan 02 (NLog wiring)
+Last session: 2026-03-17T20:44:15.139Z
+Stopped at: Completed 2-02-PLAN.md (service lifecycle)
 Resume file: None
