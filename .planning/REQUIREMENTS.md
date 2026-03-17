@@ -52,35 +52,35 @@ None planned.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOG-01 | — | Pending |
-| LOG-02 | — | Pending |
-| LOG-03 | — | Pending |
-| LOG-04 | — | Pending |
-| LOG-05 | — | Pending |
-| LOG-06 | — | Pending |
-| LOG-07 | — | Pending |
-| LOG-08 | — | Pending |
-| LOG-09 | — | Pending |
-| LOG-10 | — | Pending |
-| LOG-11 | — | Pending |
-| LOG-12 | — | Pending |
-| SVC-01 | — | Pending |
-| SVC-02 | — | Pending |
-| SVC-03 | — | Pending |
-| SVC-04 | — | Pending |
-| SVC-05 | — | Pending |
-| SVC-06 | — | Pending |
-| SVC-07 | — | Pending |
-| SVC-08 | — | Pending |
-| SVC-09 | — | Pending |
-| SVC-10 | — | Pending |
-| SVC-11 | — | Pending |
+| LOG-01 | Phase 1 | Pending |
+| LOG-02 | Phase 1 | Pending |
+| LOG-03 | Phase 1 | Pending |
+| LOG-04 | Phase 1 | Pending |
+| LOG-05 | Phase 1 | Pending |
+| LOG-06 | Phase 1 | Pending |
+| LOG-07 | Phase 1 | Pending |
+| LOG-08 | Phase 1 | Pending |
+| LOG-09 | Phase 1 | Pending |
+| LOG-10 | Phase 1 | Pending |
+| LOG-11 | Phase 1 | Pending |
+| LOG-12 | Phase 1 | Pending |
+| SVC-01 | Phase 2 | Pending |
+| SVC-02 | Phase 2 | Pending |
+| SVC-03 | Phase 2 | Pending |
+| SVC-04 | Phase 2 | Pending |
+| SVC-05 | Phase 2 | Pending |
+| SVC-06 | Phase 2 | Pending |
+| SVC-07 | Phase 2 | Pending |
+| SVC-08 | Phase 2 | Pending |
+| SVC-09 | Phase 2 | Pending |
+| SVC-10 | Phase 2 | Pending |
+| SVC-11 | Phase 2 | Pending |
 
 **Coverage:**
 - v1 requirements: 23 total
-- Mapped to phases: 0
-- Unmapped: 23 ⚠️
+- Mapped to phases: 23
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after initial definition*
+*Last updated: 2026-03-17 after roadmap creation*
