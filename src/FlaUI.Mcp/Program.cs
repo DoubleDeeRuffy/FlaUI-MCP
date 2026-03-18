@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.ServiceProcess;
+using System.Text;
 using NLog;
 using Skoosoft.ServiceHelperLib;
 using Skoosoft.Windows.Manager;
@@ -12,22 +13,42 @@ using PlaywrightWindows.Mcp.Tools;
 const string ServiceName = "FlaUI-MCP";
 const string FirewallRuleName = "FlaUI-MCP";
 
-// === 1. Parse command-line arguments — boolean flags via joined parameter string ===
-var parameter = string.Join(" ", args).ToLower();
-var silent = parameter.Contains("-silent") || parameter.Contains("-s");
-var debug = parameter.Contains("-debug") || parameter.Contains("-d");
-var install = parameter.Contains("-install") || parameter.Contains("-i");
-var uninstall = parameter.Contains("-uninstall") || parameter.Contains("-u");
-var console = parameter.Contains("-console") || parameter.Contains("-c");
-
-// Parse value arguments via for-loop
+// === 1. Parse command-line arguments ===
+var silent = false;
+var debug = false;
+var install = false;
+var uninstall = false;
+var console = false;
+var task = false;
+var removeTask = false;
 var transport = "sse";
 var port = 8080;
 
 for (int i = 0; i < args.Length; i++)
 {
-    switch (args[i])
+    switch (args[i].ToLowerInvariant())
     {
+        case "--install" or "-i":
+            install = true;
+            break;
+        case "--uninstall" or "-u":
+            uninstall = true;
+            break;
+        case "--silent" or "-s":
+            silent = true;
+            break;
+        case "--debug" or "-d":
+            debug = true;
+            break;
+        case "--console" or "-c":
+            console = true;
+            break;
+        case "--task":
+            task = true;
+            break;
+        case "--removetask":
+            removeTask = true;
+            break;
         case "--transport" when i + 1 < args.Length:
             transport = args[++i].ToLowerInvariant();
             break;
@@ -36,6 +57,9 @@ for (int i = 0; i < args.Length; i++)
             break;
     }
 }
+
+// === Register CodePages encoding provider (required for netsh/FirewallManager on German Windows) ===
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 // === 2. Console window sizing (SVC-11) ===
 if (!Debugger.IsAttached && Environment.UserInteractive)
@@ -73,8 +97,15 @@ AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 var exeFilePath = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName ?? "";
 if (transport == "sse")
 {
-    if (!FirewallManager.CheckRule(FirewallRuleName))
-        FirewallManager.SetRule(FirewallRuleName, exeFilePath);
+    try
+    {
+        if (!FirewallManager.CheckRule(FirewallRuleName))
+            FirewallManager.SetRule(FirewallRuleName, exeFilePath);
+    }
+    catch (Exception ex)
+    {
+        logger?.Error(ex, "Failed to configure firewall rule");
+    }
 }
 
 // === 8. Stop running service before console mode (SVC-08) ===
@@ -112,6 +143,78 @@ if (uninstall)
 {
     ServiceManager.Uninstall(ServiceName, silent);
     Environment.Exit(0);
+}
+
+// === 9b. Scheduled Task registration (runs in user session, can see desktop windows) ===
+const string TaskName = "FlaUI-MCP";
+if (task)
+{
+    // Create a scheduled task that runs at logon in the user session
+    var taskExeArgs = debug ? "--debug" : "";
+    var taskCommand = string.IsNullOrEmpty(taskExeArgs)
+        ? $"\"{exeFilePath}\""
+        : $"\"{exeFilePath}\" {taskExeArgs}";
+
+    var schtasksArgs = $"/create /tn \"{TaskName}\" /tr \"{taskCommand}\" /sc onlogon /rl highest /f";
+    logger?.Info("Creating scheduled task: schtasks {Args}", schtasksArgs);
+    Console.WriteLine($"Creating scheduled task '{TaskName}'...");
+
+    var process = Process.Start(new ProcessStartInfo
+    {
+        FileName = "schtasks.exe",
+        Arguments = schtasksArgs,
+        UseShellExecute = false,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        CreateNoWindow = true
+    });
+    process?.WaitForExit(30000);
+    var output = process?.StandardOutput.ReadToEnd()?.Trim();
+    var error = process?.StandardError.ReadToEnd()?.Trim();
+
+    if (process?.ExitCode == 0)
+    {
+        Console.WriteLine($"Scheduled task '{TaskName}' created. It will start FlaUI-MCP at user logon.");
+        Console.WriteLine("The task runs in the user session, so FlaUI can see desktop windows.");
+        logger?.Info("Scheduled task created successfully");
+    }
+    else
+    {
+        Console.WriteLine($"Failed to create scheduled task: {error ?? output}");
+        logger?.Error("Failed to create scheduled task: {Error}", error ?? output);
+    }
+
+    Environment.Exit(process?.ExitCode ?? 1);
+}
+
+if (removeTask)
+{
+    Console.WriteLine($"Removing scheduled task '{TaskName}'...");
+    var process = Process.Start(new ProcessStartInfo
+    {
+        FileName = "schtasks.exe",
+        Arguments = $"/delete /tn \"{TaskName}\" /f",
+        UseShellExecute = false,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        CreateNoWindow = true
+    });
+    process?.WaitForExit(30000);
+    var output = process?.StandardOutput.ReadToEnd()?.Trim();
+    var error = process?.StandardError.ReadToEnd()?.Trim();
+
+    if (process?.ExitCode == 0)
+    {
+        Console.WriteLine($"Scheduled task '{TaskName}' removed.");
+        logger?.Info("Scheduled task removed successfully");
+    }
+    else
+    {
+        Console.WriteLine($"Failed to remove scheduled task: {error ?? output}");
+        logger?.Error("Failed to remove scheduled task: {Error}", error ?? output);
+    }
+
+    Environment.Exit(process?.ExitCode ?? 1);
 }
 
 // === 10. Create shared services and run ===

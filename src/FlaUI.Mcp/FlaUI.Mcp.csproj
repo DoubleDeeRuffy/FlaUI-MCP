@@ -24,14 +24,17 @@
     <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
     <PackageReference Include="NLog" Version="5.*" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.*" />
+    <PackageReference Include="Skoosoft.ProcessLib" Version="*" />
     <PackageReference Include="Skoosoft.ServiceHelperLib" Version="*" />
     <PackageReference Include="Skoosoft.Windows" Version="*" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.5" />
     <PackageReference Include="System.Text.Json" Version="10.0.2" />
   </ItemGroup>
 
   <Target Name="CompileInnoSetup" AfterTargets="Publish">
-    <Exec Command="&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot; &quot;$(SolutionDir)Setup.iss&quot;" />
+    <Exec Command="&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot; &quot;$(MSBuildProjectDirectory)\Setup.iss&quot;" />
   </Target>
 
 </Project>

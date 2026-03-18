@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -34,6 +35,7 @@ public class SseTransport
         builder.Logging.ClearProviders();
         builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
         builder.Host.UseNLog();
+        builder.Services.AddWindowsService();
         builder.WebHost.UseUrls($"http://0.0.0.0:{_port}");
 
         var app = builder.Build();

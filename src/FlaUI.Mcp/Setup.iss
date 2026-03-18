@@ -43,17 +43,17 @@ Source: "{#MyAppSourceFolder}\*"; Excludes: "appsettings.json"; DestDir: "{app}"
 Name: "{app}"; Permissions: users-full
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Parameters: "-install -silent";
+Filename: "{app}\{#MyAppExeName}"; Parameters: "--task --silent";
 
 [UninstallRun]
-Filename: "{app}\{#MyAppExeName}"; Parameters: "-uninstall -silent";
+Filename: "{app}\{#MyAppExeName}"; Parameters: "--removetask --silent";
 
 [Code]
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usPostUninstall then
   begin 
-      if MsgBox('Sollen alle Programm-Einstellungen gelöscht werden?', mbConfirmation, MB_YESNO) = IDYES
+      if MsgBox('Sollen alle Programm-Einstellungen gelï¿½scht werden?', mbConfirmation, MB_YESNO) = IDYES
       then
         begin
           DelTree(ExpandConstant('{app}'), True, True, True);
@@ -65,19 +65,19 @@ function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   ResultCode: Integer;
 begin
-    Exec('cmd', '/C net stop FlaUI-MCP', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('cmd', '/C schtasks /end /tn "FlaUI-MCP" 2>nul & taskkill /f /im FlaUI.Mcp.exe 2>nul', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;
 
-procedure StopService();
+procedure StopTask();
 var
   ResultCode: Integer;
 begin
-    Exec('cmd', '/C net stop FlaUI-MCP', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-end;  
-    
-procedure StartService();
+    Exec('cmd', '/C schtasks /end /tn "FlaUI-MCP" 2>nul & taskkill /f /im FlaUI.Mcp.exe 2>nul', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
+procedure StartTask();
 var
   ResultCode: Integer;
 begin
-    Exec('cmd', '/C net start FlaUI-MCP', '', SW_HIDE, ewNoWait, ResultCode);
+    Exec('cmd', '/C schtasks /run /tn "FlaUI-MCP"', '', SW_HIDE, ewNoWait, ResultCode);
 end;
