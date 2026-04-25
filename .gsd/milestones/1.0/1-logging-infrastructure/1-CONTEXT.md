@@ -52,8 +52,8 @@ Add structured NLog logging to the MCP server with programmatic configuration, f
 - `~/.claude/knowledge/nlog-conventions.md` — Programmatic config rules, two-file target pattern, archive-on-startup, async writes, framework noise suppression
 
 ### Project conventions
-- `.planning/PROJECT.md` — Log directory decision, service name, constraint on programmatic-only NLog config
-- `.planning/REQUIREMENTS.md` — LOG-01 through LOG-12 requirement definitions with acceptance criteria
+- `.gsd/PROJECT.md` — Log directory decision, service name, constraint on programmatic-only NLog config
+- `.gsd/REQUIREMENTS.md` — LOG-01 through LOG-12 requirement definitions with acceptance criteria
 
 ### Existing code
 - `src/FlaUI.Mcp/Program.cs` — Entry point where NLog setup, CLI parsing, and shutdown hook will be added

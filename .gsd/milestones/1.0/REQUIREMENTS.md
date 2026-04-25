@@ -34,6 +34,18 @@
 - [x] **SVC-10**: Proper startup sequence per convention
 - [x] **SVC-11**: Console window sizing when running interactively
 
+### Task Scheduler Startup
+
+- [ ] **TSK-01**: `OutputType=WinExe` in .csproj — OS-level console window suppression, no P/Invoke needed
+- [ ] **TSK-02**: `--task` uses `WinTaskSchedulerManager.CreateOnLogon()` with `InteractiveToken` and `TaskRunLevel.Highest`
+- [ ] **TSK-03**: `--removetask` uses `WinTaskSchedulerManager.Delete()` (idempotent — no-op if task absent)
+- [ ] **TSK-04**: `AttachConsole(ATTACH_PARENT_PROCESS)` P/Invoke before any Console.WriteLine when -console, -install, or -uninstall
+- [ ] **TSK-05**: `Debugger.IsAttached` guard auto-enables -c -d and kills stale processes (excluding own PID)
+- [ ] **TSK-06**: NLog ConsoleTarget gated behind `-console` flag (not transport type)
+- [ ] **TSK-07**: Remove `Microsoft.Extensions.Hosting.WindowsServices` package dependency
+- [ ] **TSK-08**: Console window sizing guarded against WinExe headless mode (no console attached)
+- [ ] **TSK-09**: `--help` text updated to reflect Task Scheduler as primary registration method
+
 ## v2 Requirements
 
 None planned.
@@ -75,10 +87,19 @@ None planned.
 | SVC-09 | Phase 2 | Complete |
 | SVC-10 | Phase 2 | Complete |
 | SVC-11 | Phase 2 | Complete |
+| TSK-01 | Phase 3 | Pending |
+| TSK-02 | Phase 3 | Pending |
+| TSK-03 | Phase 3 | Pending |
+| TSK-04 | Phase 3 | Pending |
+| TSK-05 | Phase 3 | Pending |
+| TSK-06 | Phase 3 | Pending |
+| TSK-07 | Phase 3 | Pending |
+| TSK-08 | Phase 3 | Pending |
+| TSK-09 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 23 total
-- Mapped to phases: 23
+- v1 requirements: 32 total
+- Mapped to phases: 32
 - Unmapped: 0
 
 ---

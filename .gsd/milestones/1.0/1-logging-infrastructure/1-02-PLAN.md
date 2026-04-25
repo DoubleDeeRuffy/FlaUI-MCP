@@ -69,11 +69,11 @@ Output: Modified Program.cs, McpServer.cs, and SseTransport.cs with full NLog in
 </execution_context>
 
 <context>
-@.planning/PROJECT.md
-@.planning/ROADMAP.md
-@.planning/STATE.md
-@.planning/phases/1-logging-infrastructure/1-CONTEXT.md
-@.planning/phases/1-logging-infrastructure/1-01-SUMMARY.md
+@.gsd/PROJECT.md
+@.gsd/ROADMAP.md
+@.gsd/STATE.md
+@.gsd/phases/1-logging-infrastructure/1-CONTEXT.md
+@.gsd/phases/1-logging-infrastructure/1-01-SUMMARY.md
 
 <interfaces>
 <!-- From Plan 01 outputs — the executor needs these contracts -->
@@ -279,5 +279,5 @@ After these changes, **zero** `Console.Error.WriteLine` calls should remain in t
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/1-logging-infrastructure/1-02-SUMMARY.md`
+After completion, create `.gsd/phases/1-logging-infrastructure/1-02-SUMMARY.md`
 </output>

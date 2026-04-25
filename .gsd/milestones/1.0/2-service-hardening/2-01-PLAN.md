@@ -48,10 +48,10 @@ Output: .csproj with Skoosoft packages, Program.cs with all CLI flags parsed and
 </execution_context>
 
 <context>
-@.planning/PROJECT.md
-@.planning/ROADMAP.md
-@.planning/STATE.md
-@.planning/phases/2-service-hardening/2-CONTEXT.md
+@.gsd/PROJECT.md
+@.gsd/ROADMAP.md
+@.gsd/STATE.md
+@.gsd/phases/2-service-hardening/2-CONTEXT.md
 
 <interfaces>
 <!-- Current Program.cs uses top-level statements with a for-loop arg parser -->
@@ -120,7 +120,7 @@ After adding, run `dotnet restore` to verify the packages resolve correctly.
   <read_first>
     - src/FlaUI.Mcp/Program.cs
     - C:\Users\uhgde\.claude\knowledge\windows-service-conventions.md
-    - .planning/phases/2-service-hardening/2-CONTEXT.md
+    - .gsd/phases/2-service-hardening/2-CONTEXT.md
   </read_first>
   <action>
 Replace the existing for-loop arg parser in Program.cs with a two-phase approach that supports both styles:
@@ -194,5 +194,5 @@ Keep everything else in Program.cs unchanged (sessionManager, toolRegistry, serv
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/2-service-hardening/2-01-SUMMARY.md`
+After completion, create `.gsd/phases/2-service-hardening/2-01-SUMMARY.md`
 </output>

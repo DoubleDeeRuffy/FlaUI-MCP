@@ -106,6 +106,6 @@ None - no external service configuration required.
 
 - FOUND: src/FlaUI.Mcp/Logging/LogArchiver.cs
 - FOUND: src/FlaUI.Mcp/Logging/LoggingConfig.cs
-- FOUND: .planning/phases/1-logging-infrastructure/1-01-SUMMARY.md
+- FOUND: .gsd/phases/1-logging-infrastructure/1-01-SUMMARY.md
 - FOUND: commit 6d3128c (Task 1)
 - FOUND: commit 7833455 (Task 2)

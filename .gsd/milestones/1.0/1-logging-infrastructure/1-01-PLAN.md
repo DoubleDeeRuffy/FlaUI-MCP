@@ -62,10 +62,10 @@ Output: Two new files in `src/FlaUI.Mcp/Logging/`, NLog NuGet packages added to 
 </execution_context>
 
 <context>
-@.planning/PROJECT.md
-@.planning/ROADMAP.md
-@.planning/STATE.md
-@.planning/phases/1-logging-infrastructure/1-CONTEXT.md
+@.gsd/PROJECT.md
+@.gsd/ROADMAP.md
+@.gsd/STATE.md
+@.gsd/phases/1-logging-infrastructure/1-CONTEXT.md
 </context>
 
 <tasks>
@@ -131,7 +131,7 @@ Important: Do NOT use NLog built-in archiving. This is a manual pre-NLog step pe
   <read_first>
     - ~/.claude/knowledge/nlog-conventions.md (programmatic config pattern, file layout, console layout, framework suppression, async writes)
     - src/FlaUI.Mcp/Logging/LogArchiver.cs (just created — confirm namespace)
-    - .planning/phases/1-logging-infrastructure/1-CONTEXT.md (console target behavior: SSE only, disabled in stdio)
+    - .gsd/phases/1-logging-infrastructure/1-CONTEXT.md (console target behavior: SSE only, disabled in stdio)
   </read_first>
   <action>
 **Create `src/FlaUI.Mcp/Logging/LoggingConfig.cs`.**
@@ -249,5 +249,5 @@ The `enableConsoleTarget` parameter allows Program.cs to pass `transport == "sse
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/1-logging-infrastructure/1-01-SUMMARY.md`
+After completion, create `.gsd/phases/1-logging-infrastructure/1-01-SUMMARY.md`
 </output>

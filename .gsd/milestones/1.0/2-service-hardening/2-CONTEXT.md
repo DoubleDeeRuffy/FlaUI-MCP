@@ -52,7 +52,7 @@ The server installs and runs as a managed Windows Service with full CLI control,
 - `~/.claude/CLAUDE.md` -- Global instructions including service conventions and NLog conventions
 
 ### Requirements
-- `.planning/REQUIREMENTS.md` -- SVC-01 through SVC-11 define all service requirements
+- `.gsd/REQUIREMENTS.md` -- SVC-01 through SVC-11 define all service requirements
 
 ### Existing code
 - `src/FlaUI.Mcp/Program.cs` -- Current entry point with arg parsing and transport setup; must be restructured

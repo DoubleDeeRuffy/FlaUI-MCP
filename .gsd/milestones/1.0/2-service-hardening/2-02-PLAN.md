@@ -69,10 +69,10 @@ Output: Program.cs restructured with the complete startup sequence per conventio
 </execution_context>
 
 <context>
-@.planning/PROJECT.md
-@.planning/ROADMAP.md
-@.planning/phases/2-service-hardening/2-CONTEXT.md
-@.planning/phases/2-service-hardening/2-01-SUMMARY.md
+@.gsd/PROJECT.md
+@.gsd/ROADMAP.md
+@.gsd/phases/2-service-hardening/2-CONTEXT.md
+@.gsd/phases/2-service-hardening/2-01-SUMMARY.md
 
 <interfaces>
 <!-- From windows-service-conventions.md — the canonical startup sequence: -->
@@ -155,7 +155,7 @@ AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
     - src/FlaUI.Mcp/Program.cs
     - C:\Users\uhgde\.claude\knowledge\windows-service-conventions.md
     - C:\Users\uhgde\.claude\knowledge\nlog-conventions.md
-    - .planning/phases/2-service-hardening/2-CONTEXT.md
+    - .gsd/phases/2-service-hardening/2-CONTEXT.md
   </read_first>
   <action>
 Restructure Program.cs to follow the canonical startup sequence. The file keeps top-level statements (no explicit Main method). Add required usings at the top:
@@ -377,5 +377,5 @@ If the order is wrong, reorder the code blocks.
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/2-service-hardening/2-02-SUMMARY.md`
+After completion, create `.gsd/phases/2-service-hardening/2-02-SUMMARY.md`
 </output>

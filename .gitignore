@@ -49,3 +49,4 @@ Desktop.ini
 # Session files
 TestFlaUI/
 *.csx
+.claude/worktrees/
