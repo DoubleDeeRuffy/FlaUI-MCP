@@ -18,6 +18,9 @@ The MCP server must reliably automate Windows desktop applications via accessibi
 - ✓ Session/window management via SessionManager — existing
 - ✓ Multi-architecture builds (x64 + ARM64) — existing
 - ✓ CLI args for transport and port selection — existing
+- ✓ Streamable HTTP transport (default, port 3020, `/mcp`) with Origin allowlist + 127.0.0.1 default bind — Validated in Phase 4: streamable-http-transport (HTTP-01..08)
+- ✓ SSE transport brought to D-06 parity (default-bind 127.0.0.1, Origin allowlist, `--bind` support) — Validated in Phase 4
+- ✓ `CliOptions` record extracted as single source of truth for CLI defaults + help text — Validated in Phase 4
 
 ### Active
 
@@ -64,5 +67,9 @@ The MCP server must reliably automate Windows desktop applications via accessibi
 | Service name `FlaUI-MCP` | Matches repo name, clear identity | — Pending |
 | Skoosoft NuGet packages for service/firewall | Consistent with ConfigHub ecosystem | — Pending |
 
+## Current State
+
+Milestone 1.0 complete through Phase 4. Streamable HTTP is now the default transport; legacy SSE retained for compat with full D-06 parity; stdio unchanged. 19/19 unit tests passing.
+
 ---
-*Last updated: 2026-03-17 after initialization*
+*Last updated: 2026-04-26 after Phase 4 (streamable-http-transport) completion*
