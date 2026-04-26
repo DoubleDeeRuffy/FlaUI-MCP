@@ -48,8 +48,9 @@ if (helpRequested)
     Console.WriteLine("  --console, -c       Run in console mode (attach to parent shell, enable ConsoleTarget)");
     Console.WriteLine("  --debug, -d         Enable debug-level logging (Debug.log)");
     Console.WriteLine("  --silent, -s        Suppress prompts during registration");
-    Console.WriteLine("  --transport <type>  Transport: sse (default) or stdio");
-    Console.WriteLine("  --port <number>     SSE listen port (default: 3020)");
+    Console.WriteLine("  --transport <type>  Transport: http (default), sse, or stdio");
+    Console.WriteLine("  --bind <addr>       Kestrel bind address (default: 127.0.0.1; use 0.0.0.0 for LAN)");
+    Console.WriteLine("  --port <number>     Listen port (default: 3020)");
     Console.WriteLine("  --help, -?          Show this help");
     Console.WriteLine();
     Console.WriteLine("Aliases (compatibility with v0.x service-based scripts):");
@@ -103,11 +104,11 @@ var logDirectory = LoggingConfig.LogDirectory;
 LogArchiver.CleanOldLogfiles(logDirectory);
 
 // === 4. ConfigureLogging(debug) ===
-LoggingConfig.ConfigureLogging(debug, logDirectory, enableConsoleTarget: console);
+LoggingConfig.ConfigureLogging(debug, logDirectory, enableConsoleTarget: transport != "stdio");
 
 // === 5. Get logger ===
 Logger? logger = LogManager.GetCurrentClassLogger();
-logger.Info("FlaUI-MCP starting (transport={transport}, debug={debug})", transport, debug);
+logger.Info("FlaUI-MCP starting (transport={Transport}, bind={Bind}, port={Port}, debug={Debug})", transport, opts.BindAddress, port, debug);
 
 // === 6. Unhandled exception handler (SVC-09) ===
 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
@@ -115,9 +116,9 @@ AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
     logger?.Error(e.ExceptionObject as Exception, "Unhandled exception");
 };
 
-// === 7. Firewall rule (SVC-07) — only for SSE transport ===
+// === 7. Firewall rule (SVC-07) — for SSE and HTTP transports ===
 var exeFilePath = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName ?? "";
-if (transport == "sse")
+if (transport == "sse" || transport == "http")
 {
     try
     {
@@ -243,14 +244,25 @@ Console.CancelKeyPress += (_, e) =>
 
 try
 {
-    if (transport == "sse")
+    if (transport == "http")
     {
-        var sseTransport = new SseTransport(server, port);
+        await FlaUI.Mcp.Mcp.Http.HttpTransport.RunAsync(
+            sessionManager, elementRegistry, toolRegistry,
+            opts.BindAddress, port, cts.Token);
+    }
+    else if (transport == "sse")
+    {
+        var sseTransport = new SseTransport(server, opts.BindAddress, port);
         await sseTransport.RunAsync(cts.Token);
+    }
+    else if (transport == "stdio")
+    {
+        await server.RunAsync(cts.Token);
     }
     else
     {
-        await server.RunAsync(cts.Token);
+        logger?.Error("Unknown transport '{Transport}' — must be one of: http, sse, stdio", transport);
+        Environment.Exit(2);
     }
 }
 catch (Exception ex)
