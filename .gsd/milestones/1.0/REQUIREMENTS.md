@@ -55,7 +55,7 @@
 - [ ] **HTTP-05**: All 11 tools (Launch/Snapshot/Click/Type/Fill/GetText/Screenshot/ListWindows/FocusWindow/CloseWindow/Batch) callable on http and sse transports
 - [ ] **HTTP-06**: Default Kestrel bind = 127.0.0.1; --bind <addr> CLI escape hatch; policy applies to both http and sse
 - [ ] **HTTP-07**: Origin header rejected (HTTP 403) unless absent, "null", localhost, or 127.0.0.1
-- [ ] **HTTP-08**: Default transport flipped from sse to http; --help text updated
+- [x] **HTTP-08**: Default transport flipped from sse to http; --help text updated
 
 ## v2 Requirements
 
@@ -114,7 +114,7 @@ None planned.
 | HTTP-05 | Phase 4 | Pending |
 | HTTP-06 | Phase 4 | Pending |
 | HTTP-07 | Phase 4 | Pending |
-| HTTP-08 | Phase 4 | Pending |
+| HTTP-08 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 40 total
