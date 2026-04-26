@@ -94,6 +94,28 @@ if (helpRequested)
     Environment.Exit(0);
 }
 
+// === 1c. Debugger guard: F5 from VS auto-enables -c -d, kills stale FlaUI.Mcp procs (TSK-05) ===
+if (Debugger.IsAttached)
+{
+    console = true;
+    debug = true;
+
+    var currentPid = Environment.ProcessId;
+    foreach (var stale in Process.GetProcessesByName("FlaUI.Mcp")
+                                 .Where(p => p.Id != currentPid))
+    {
+        try
+        {
+            stale.Kill();
+            stale.WaitForExit(5000);
+        }
+        catch
+        {
+            // Process may have exited between enumeration and kill — race is fine.
+        }
+    }
+}
+
 // === Register CodePages encoding provider (required for netsh/FirewallManager on German Windows) ===
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
