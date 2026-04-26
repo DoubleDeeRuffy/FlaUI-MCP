@@ -139,7 +139,7 @@ var logDirectory = LoggingConfig.LogDirectory;
 LogArchiver.CleanOldLogfiles(logDirectory);
 
 // === 4. ConfigureLogging(debug) ===
-LoggingConfig.ConfigureLogging(debug, logDirectory, enableConsoleTarget: transport == "sse");
+LoggingConfig.ConfigureLogging(debug, logDirectory, enableConsoleTarget: console);
 
 // === 5. Get logger ===
 Logger? logger = LogManager.GetCurrentClassLogger();
