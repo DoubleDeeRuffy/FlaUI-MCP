@@ -23,6 +23,7 @@ var task = false;
 var removeTask = false;
 var transport = "sse";
 var port = 3020;
+var helpRequested = false;
 
 for (int i = 0; i < args.Length; i++)
 {
@@ -56,31 +57,48 @@ for (int i = 0; i < args.Length; i++)
             if (int.TryParse(args[++i], out var p)) port = p;
             break;
         case "--help" or "-?":
-            Console.WriteLine("FlaUI-MCP — MCP server for Windows desktop automation");
-            Console.WriteLine();
-            Console.WriteLine("Usage: FlaUI.Mcp.exe [options]");
-            Console.WriteLine();
-            Console.WriteLine("Options:");
-            Console.WriteLine("  --install, -i       Install as Windows Service");
-            Console.WriteLine("  --uninstall, -u     Uninstall Windows Service");
-            Console.WriteLine("  --task              Register as scheduled task (runs in user session)");
-            Console.WriteLine("  --removetask        Remove scheduled task");
-            Console.WriteLine("  --silent, -s        Suppress prompts during install/uninstall");
-            Console.WriteLine("  --debug, -d         Enable debug-level logging (Debug.log)");
-            Console.WriteLine("  --console, -c       Run in console mode (stops running service first)");
-            Console.WriteLine("  --transport <type>  Transport: sse (default) or stdio");
-            Console.WriteLine("  --port <number>     SSE listen port (default: 8080)");
-            Console.WriteLine("  --help, -?          Show this help");
-            Environment.Exit(0);
+            helpRequested = true;
             break;
     }
+}
+
+// === 1b. Re-attach to parent console under WinExe so Console.* writes are visible (TSK-04) ===
+if (console || install || uninstall || task || removeTask || helpRequested)
+{
+    NativeMethods.AttachConsole(NativeMethods.ATTACH_PARENT_PROCESS);
+    // Return value intentionally ignored: false means no parent console (e.g. launched
+    // by Task Scheduler) — Console.WriteLine then becomes a silent no-op, which is fine.
+}
+
+if (helpRequested)
+{
+    Console.WriteLine("FlaUI-MCP — MCP server for Windows desktop automation");
+    Console.WriteLine();
+    Console.WriteLine("Usage: FlaUI.Mcp.exe [options]");
+    Console.WriteLine();
+    Console.WriteLine("Registration:");
+    Console.WriteLine("  --task              Register as scheduled task (runs at user logon, sees desktop)");
+    Console.WriteLine("  --removetask        Remove scheduled task");
+    Console.WriteLine();
+    Console.WriteLine("Runtime:");
+    Console.WriteLine("  --console, -c       Run in console mode (attach to parent shell, enable ConsoleTarget)");
+    Console.WriteLine("  --debug, -d         Enable debug-level logging (Debug.log)");
+    Console.WriteLine("  --silent, -s        Suppress prompts during registration");
+    Console.WriteLine("  --transport <type>  Transport: sse (default) or stdio");
+    Console.WriteLine("  --port <number>     SSE listen port (default: 3020)");
+    Console.WriteLine("  --help, -?          Show this help");
+    Console.WriteLine();
+    Console.WriteLine("Aliases (compatibility with v0.x service-based scripts):");
+    Console.WriteLine("  --install, -i       Same as --task");
+    Console.WriteLine("  --uninstall, -u     Same as --removetask");
+    Environment.Exit(0);
 }
 
 // === Register CodePages encoding provider (required for netsh/FirewallManager on German Windows) ===
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-// === 2. Console window sizing (SVC-11) ===
-if (!Debugger.IsAttached && Environment.UserInteractive)
+// === 2. Console window sizing (SVC-11, TSK-08) ===
+if (console)
 {
     try
     {
@@ -258,4 +276,11 @@ finally
 {
     LogManager.Shutdown();
     sessionManager.Dispose();
+}
+
+internal static class NativeMethods
+{
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern bool AttachConsole(int dwProcessId);
+    internal const int ATTACH_PARENT_PROCESS = -1;
 }
