@@ -3,10 +3,16 @@
   "milestone": "1.0",
   "status": "executing",
   "paused_at": null,
-  "stopped_at": "2026-04-26T07:47:59.006Z",
+  "stopped_at": "2026-04-26T08:30:00.000Z",
   "current_plan_pointer": {
     "phase": 3,
     "plan": 3
+  },
+  "last_completed": {
+    "phase": 3,
+    "plan": 2,
+    "commit": "310e1e4",
+    "completed_at": "2026-04-26"
   },
   "blockers": []
 }
