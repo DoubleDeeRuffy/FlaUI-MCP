@@ -62,6 +62,17 @@ Plans:
   8. Console window sizing only executes when a real console is attached (not WinExe headless)
   9. `--help` text reflects Task Scheduler as the primary registration method
 
+**Plans:** 8 plans
+Plans:
+- [ ] 3-00-PLAN.md — Wave 0 infrastructure: verify.cmd + UAT-CHECKLIST.md
+- [ ] 3-01-PLAN.md — csproj: OutputType=WinExe, remove WindowsServices package (TSK-01, TSK-07)
+- [ ] 3-02-PLAN.md — Replace schtasks shell-out with WinTaskSchedulerManager.CreateOnLogon/Delete + D-1 auto-migration (TSK-02, TSK-03)
+- [ ] 3-03-PLAN.md — AttachConsole P/Invoke + headless-safe console window sizing (TSK-04, TSK-08)
+- [ ] 3-04-PLAN.md — Debugger.IsAttached guard with stale-process kill (TSK-05)
+- [ ] 3-05-PLAN.md — NLog ConsoleTarget gated on -console flag (TSK-06)
+- [ ] 3-06-PLAN.md — Finalize --help text per D-4 layout (TSK-09)
+- [ ] 3-07-PLAN.md — Manual UAT execution per UAT-CHECKLIST.md, record results
+
 ### Phase 4: Streamable HTTP transport
 
 **Goal:** The server exposes a Streamable HTTP transport per MCP spec 2025-03-26 — a single `/mcp` endpoint accepting POST (JSON-RPC) and GET (optional SSE upgrade) — usable by modern MCP clients in addition to the existing legacy `/sse` + `/messages` transport
