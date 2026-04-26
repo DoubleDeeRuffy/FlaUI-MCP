@@ -1,4 +1,7 @@
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Xunit;
 
 namespace FlaUI.Mcp.Tests;
@@ -82,5 +85,104 @@ public class ToolParityTests : IClassFixture<HttpTransportFixture>
             """;
         using var resp = await _fx.PostJsonRpcAsync(sessionId, body);
         Assert.True((int)resp.StatusCode is >= 200 and < 300);
+    }
+
+    /// <summary>
+    /// HTTP-05 parity, SSE side. Boots the legacy SseTransport on port 0, opens the SSE
+    /// stream to obtain a sessionId, performs the JSON-RPC <c>initialize</c> handshake,
+    /// then invokes a non-UI tool via <c>tools/call</c> and asserts a JSON-RPC result
+    /// (no error, no isError) parsed off the SSE message frame.
+    /// Together with <see cref="NonUiToolsExecuteOverHttp"/>, HTTP-05 is functionally
+    /// proven on BOTH the new HTTP transport AND the legacy SSE transport.
+    /// </summary>
+    [Theory]
+    [InlineData("windows_list_windows", "{}")]
+    [InlineData("windows_batch", """{"actions":[]}""")]
+    public async Task NonUiToolsExecuteOverSse(string toolName, string argsJson)
+    {
+        var (_, serverTask, cts, baseUrl) = SseTransportTests.StartTransport();
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(baseUrl) };
+
+            using var sseReq = new HttpRequestMessage(HttpMethod.Get, "/sse");
+            sseReq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
+            using var sseResp = await client.SendAsync(sseReq, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+            Assert.Equal(HttpStatusCode.OK, sseResp.StatusCode);
+
+            await using var sseStream = await sseResp.Content.ReadAsStreamAsync(cts.Token);
+            using var reader = new StreamReader(sseStream);
+
+            // Pull the endpoint event for the sessionId.
+            var sessionId = await ReadEventDataAsync(reader, expectedEvent: "endpoint", TimeSpan.FromSeconds(5));
+            var key = "sessionId=";
+            sessionId = sessionId.Substring(sessionId.IndexOf(key, StringComparison.Ordinal) + key.Length);
+
+            // Handshake: initialize → message frame on /sse.
+            var initBody = """{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}""";
+            await PostMessageAsync(client, sessionId, initBody, cts.Token);
+            _ = await ReadEventDataAsync(reader, expectedEvent: "message", TimeSpan.FromSeconds(5));
+
+            // tools/call for the non-UI tool.
+            var callBody =
+                "{\"jsonrpc\":\"2.0\",\"id\":42,\"method\":\"tools/call\",\"params\":{\"name\":\""
+                + toolName + "\",\"arguments\":" + argsJson + "}}";
+            await PostMessageAsync(client, sessionId, callBody, cts.Token);
+
+            var responseJson = await ReadEventDataAsync(reader, expectedEvent: "message", TimeSpan.FromSeconds(10));
+            using var doc = JsonDocument.Parse(responseJson);
+            var root = doc.RootElement;
+
+            Assert.False(root.TryGetProperty("error", out _),
+                $"{toolName} returned JSON-RPC error: {root.GetRawText()}");
+            Assert.True(root.TryGetProperty("result", out var result));
+
+            if (result.TryGetProperty("isError", out var isErr) && isErr.ValueKind == JsonValueKind.True)
+            {
+                Assert.Fail($"{toolName} reported isError=true: {result.GetRawText()}");
+            }
+        }
+        finally
+        {
+            cts.Cancel();
+            try { await serverTask; } catch { /* shutdown noise */ }
+            cts.Dispose();
+        }
+    }
+
+    private static async Task PostMessageAsync(HttpClient client, string sessionId, string body, CancellationToken ct)
+    {
+        using var msg = new HttpRequestMessage(HttpMethod.Post, $"/messages?sessionId={sessionId}")
+        {
+            Content = new StringContent(body, Encoding.UTF8, "application/json"),
+        };
+        using var resp = await client.SendAsync(msg, ct);
+        Assert.True((int)resp.StatusCode is >= 200 and < 300,
+            $"POST /messages returned {(int)resp.StatusCode}");
+    }
+
+    /// <summary>
+    /// Reads SSE frames until an <c>event: {expectedEvent}</c> followed by a <c>data:</c>
+    /// line is encountered; returns the data payload.
+    /// </summary>
+    private static async Task<string> ReadEventDataAsync(StreamReader reader, string expectedEvent, TimeSpan timeout)
+    {
+        using var cts = new CancellationTokenSource(timeout);
+        bool match = false;
+        while (!cts.IsCancellationRequested)
+        {
+            var line = await reader.ReadLineAsync(cts.Token);
+            if (line == null) break;
+            if (line.StartsWith("event:", StringComparison.Ordinal))
+            {
+                match = line.Substring(6).Trim() == expectedEvent;
+                continue;
+            }
+            if (match && line.StartsWith("data:", StringComparison.Ordinal))
+            {
+                return line.Substring(5).Trim();
+            }
+        }
+        return string.Empty;
     }
 }

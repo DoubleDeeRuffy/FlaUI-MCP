@@ -1,8 +1,11 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using FlaUI.Mcp.Mcp.Http;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,13 +23,38 @@ public class SseTransport
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly McpServer _server;
+    private readonly string _bindAddress;
     private readonly int _port;
+    private readonly TaskCompletionSource<string>? _boundUrl;
     private readonly ConcurrentDictionary<string, SseClient> _clients = new();
 
+    /// <summary>
+    /// Backward-compat shim: defaults bind address to <c>127.0.0.1</c> (D-06 loopback default).
+    /// </summary>
     public SseTransport(McpServer server, int port)
+        : this(server, "127.0.0.1", port)
+    {
+    }
+
+    /// <summary>
+    /// D-06 parity ctor: explicit <paramref name="bindAddress"/> matches the new HTTP transport
+    /// surface so <c>--bind</c> can widen the bind from the loopback default.
+    /// </summary>
+    public SseTransport(McpServer server, string bindAddress, int port)
+        : this(server, bindAddress, port, boundUrl: null)
+    {
+    }
+
+    /// <summary>
+    /// Test-only ctor: surfaces the actually-bound URL via <paramref name="boundUrl"/> once
+    /// Kestrel has selected a free port (used when <paramref name="port"/> is 0).
+    /// </summary>
+    internal SseTransport(McpServer server, string bindAddress, int port, TaskCompletionSource<string>? boundUrl)
     {
         _server = server;
+        _bindAddress = bindAddress;
         _port = port;
+        _boundUrl = boundUrl;
     }
 
     public async Task RunAsync(CancellationToken cancellationToken)
@@ -35,9 +63,13 @@ public class SseTransport
         builder.Logging.ClearProviders();
         builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
         builder.Host.UseNLog();
-        builder.WebHost.UseUrls($"http://0.0.0.0:{_port}");
+        builder.WebHost.UseUrls($"http://{_bindAddress}:{_port}");
 
         var app = builder.Build();
+
+        // D-06: enforce Origin allowlist BEFORE the legacy SSE endpoints so external
+        // Origins never reach the streaming/messaging handlers (DNS-rebinding defense).
+        app.UseMiddleware<OriginValidationMiddleware>();
 
         app.MapGet("/sse", async (HttpContext context) =>
         {
@@ -118,9 +150,28 @@ public class SseTransport
             await context.Response.WriteAsync("Accepted");
         });
 
-        Logger.Info("FlaUI-MCP SSE server listening on http://0.0.0.0:{Port}", _port);
-        Logger.Info("  SSE endpoint:     GET  http://localhost:{Port}/sse", _port);
-        Logger.Info("  Message endpoint:  POST http://localhost:{Port}/messages?sessionId=<id>", _port);
+        Logger.Info("FlaUI-MCP SSE server listening on http://{Bind}:{Port}", _bindAddress, _port);
+        Logger.Info("  SSE endpoint:     GET  http://{Bind}:{Port}/sse", _bindAddress, _port);
+        Logger.Info("  Message endpoint:  POST http://{Bind}:{Port}/messages?sessionId=<id>", _bindAddress, _port);
+
+        // Surface the actually-bound URL after start (used by tests with port 0).
+        if (_boundUrl != null)
+        {
+            app.Lifetime.ApplicationStarted.Register(() =>
+            {
+                try
+                {
+                    var server = app.Services.GetRequiredService<IServer>();
+                    var addrs = server.Features.Get<IServerAddressesFeature>();
+                    var url = addrs?.Addresses.FirstOrDefault() ?? $"http://{_bindAddress}:{_port}";
+                    _boundUrl.TrySetResult(url);
+                }
+                catch (Exception ex)
+                {
+                    _boundUrl.TrySetException(ex);
+                }
+            });
+        }
 
         await app.RunAsync(cancellationToken);
     }
