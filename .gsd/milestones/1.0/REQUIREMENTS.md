@@ -40,7 +40,7 @@
 - [ ] **TSK-02**: `--task` uses `WinTaskSchedulerManager.CreateOnLogon()` with `InteractiveToken` and `TaskRunLevel.Highest`
 - [ ] **TSK-03**: `--removetask` uses `WinTaskSchedulerManager.Delete()` (idempotent — no-op if task absent)
 - [ ] **TSK-04**: `AttachConsole(ATTACH_PARENT_PROCESS)` P/Invoke before any Console.WriteLine when -console, -install, or -uninstall
-- [ ] **TSK-05**: `Debugger.IsAttached` guard auto-enables -c -d and kills stale processes (excluding own PID)
+- [x] **TSK-05**: `Debugger.IsAttached` guard auto-enables -c -d and kills stale processes (excluding own PID)
 - [ ] **TSK-06**: NLog ConsoleTarget gated behind `-console` flag (not transport type)
 - [x] **TSK-07**: Remove `Microsoft.Extensions.Hosting.WindowsServices` package dependency
 - [ ] **TSK-08**: Console window sizing guarded against WinExe headless mode (no console attached)
@@ -91,7 +91,7 @@ None planned.
 | TSK-02 | Phase 3 | Pending |
 | TSK-03 | Phase 3 | Pending |
 | TSK-04 | Phase 3 | Pending |
-| TSK-05 | Phase 3 | Pending |
+| TSK-05 | Phase 3 | Complete |
 | TSK-06 | Phase 3 | Pending |
 | TSK-07 | Phase 3 | Complete |
 | TSK-08 | Phase 3 | Pending |

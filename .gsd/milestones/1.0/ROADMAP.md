@@ -77,7 +77,7 @@ Plans:
 
 **Goal:** The server exposes a Streamable HTTP transport per MCP spec 2025-03-26 — a single `/mcp` endpoint accepting POST (JSON-RPC) and GET (optional SSE upgrade) — usable by modern MCP clients in addition to the existing legacy `/sse` + `/messages` transport
 **Depends on:** Phase 3
-**Requirements**: TBD (to be derived during /gsd:discuss-phase 4)
+**Requirements**: HTTP-01, HTTP-02, HTTP-03, HTTP-04, HTTP-05, HTTP-06, HTTP-07, HTTP-08
 **Success Criteria** (what must be TRUE — to be refined):
   1. `--transport http` (or similar) selects Streamable HTTP, exposing POST/GET on `/mcp`
   2. Existing `--transport sse` legacy endpoints (`/sse`, `/messages`) continue to work unchanged
@@ -85,5 +85,9 @@ Plans:
   4. Session/lifecycle handling matches the spec (Mcp-Session-Id header, proper status codes, stream resumability if scoped in)
   5. Existing tools (Launch, Snapshot, Click, etc.) work identically across both transports
 
+**Plans:** 4 plans
 Plans:
-- TBD (run /gsd:plan-phase 4 to break down)
+- [ ] 4-01-PLAN.md — Wave 0: xunit test project + extract CliOptions parser + HTTP-* test stubs
+- [ ] 4-02-PLAN.md — Wave 1: SDK 1.2.0 package + ITool→McpServerTool bridge + HttpTransport host + OriginValidationMiddleware
+- [ ] 4-03-PLAN.md — Wave 1: SseTransport bind+Origin parity (D-06) and HTTP-02 regression test
+- [ ] 4-04-PLAN.md — Wave 2: Wire http branch + --bind + default flip + help-text fix + REQUIREMENTS.md update
