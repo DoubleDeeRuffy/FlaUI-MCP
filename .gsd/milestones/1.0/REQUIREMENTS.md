@@ -44,7 +44,7 @@
 - [x] **TSK-06**: NLog ConsoleTarget gated behind `-console` flag (not transport type)
 - [x] **TSK-07**: Remove `Microsoft.Extensions.Hosting.WindowsServices` package dependency
 - [ ] **TSK-08**: Console window sizing guarded against WinExe headless mode (no console attached)
-- [ ] **TSK-09**: `--help` text updated to reflect Task Scheduler as primary registration method
+- [x] **TSK-09**: `--help` text updated to reflect Task Scheduler as primary registration method
 
 ## v2 Requirements
 
@@ -95,7 +95,7 @@ None planned.
 | TSK-06 | Phase 3 | Complete |
 | TSK-07 | Phase 3 | Complete |
 | TSK-08 | Phase 3 | Pending |
-| TSK-09 | Phase 3 | Pending |
+| TSK-09 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 32 total
