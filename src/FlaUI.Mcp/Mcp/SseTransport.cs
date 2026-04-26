@@ -35,7 +35,6 @@ public class SseTransport
         builder.Logging.ClearProviders();
         builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
         builder.Host.UseNLog();
-        builder.Services.AddWindowsService();
         builder.WebHost.UseUrls($"http://0.0.0.0:{_port}");
 
         var app = builder.Build();

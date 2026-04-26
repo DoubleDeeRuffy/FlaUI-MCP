@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.ServiceProcess;
 using System.Text;
 using NLog;
-using Skoosoft.ServiceHelperLib;
 using Skoosoft.Windows.Manager;
 using FlaUI.Mcp.Logging;
 using PlaywrightWindows.Mcp;
@@ -12,6 +11,7 @@ using PlaywrightWindows.Mcp.Tools;
 // === Constants ===
 const string ServiceName = "FlaUI-MCP";
 const string FirewallRuleName = "FlaUI-MCP";
+const string TaskName = "FlaUI-MCP";
 
 // === 1. Parse command-line arguments ===
 var silent = false;
@@ -22,7 +22,7 @@ var console = false;
 var task = false;
 var removeTask = false;
 var transport = "sse";
-var port = 8080;
+var port = 3020;
 
 for (int i = 0; i < args.Length; i++)
 {
@@ -54,6 +54,24 @@ for (int i = 0; i < args.Length; i++)
             break;
         case "--port" when i + 1 < args.Length:
             if (int.TryParse(args[++i], out var p)) port = p;
+            break;
+        case "--help" or "-?":
+            Console.WriteLine("FlaUI-MCP — MCP server for Windows desktop automation");
+            Console.WriteLine();
+            Console.WriteLine("Usage: FlaUI.Mcp.exe [options]");
+            Console.WriteLine();
+            Console.WriteLine("Options:");
+            Console.WriteLine("  --install, -i       Install as Windows Service");
+            Console.WriteLine("  --uninstall, -u     Uninstall Windows Service");
+            Console.WriteLine("  --task              Register as scheduled task (runs in user session)");
+            Console.WriteLine("  --removetask        Remove scheduled task");
+            Console.WriteLine("  --silent, -s        Suppress prompts during install/uninstall");
+            Console.WriteLine("  --debug, -d         Enable debug-level logging (Debug.log)");
+            Console.WriteLine("  --console, -c       Run in console mode (stops running service first)");
+            Console.WriteLine("  --transport <type>  Transport: sse (default) or stdio");
+            Console.WriteLine("  --port <number>     SSE listen port (default: 8080)");
+            Console.WriteLine("  --help, -?          Show this help");
+            Environment.Exit(0);
             break;
     }
 }
@@ -129,92 +147,66 @@ if (Environment.UserInteractive)
     }
 }
 
-// === 9. Install or Uninstall service (SVC-01, SVC-02, SVC-03, SVC-06) ===
-if (install)
+// === 9. Register / unregister scheduled task (TSK-02, TSK-03; aliases per D-2) ===
+// -install/-i alias --task; -uninstall/-u alias --removetask
+if (task || install)
 {
-    ServiceManager.Install(ServiceName, exeFilePath, silent);
-    // Firewall rule also created during install (if SSE)
-    if (!FirewallManager.CheckRule(FirewallRuleName))
-        FirewallManager.SetRule(FirewallRuleName, exeFilePath);
-    Environment.Exit(0);
-}
-
-if (uninstall)
-{
-    ServiceManager.Uninstall(ServiceName, silent);
-    Environment.Exit(0);
-}
-
-// === 9b. Scheduled Task registration (runs in user session, can see desktop windows) ===
-const string TaskName = "FlaUI-MCP";
-if (task)
-{
-    // Create a scheduled task that runs at logon in the user session
-    var taskExeArgs = debug ? "--debug" : "";
-    var taskCommand = string.IsNullOrEmpty(taskExeArgs)
-        ? $"\"{exeFilePath}\""
-        : $"\"{exeFilePath}\" {taskExeArgs}";
-
-    var schtasksArgs = $"/create /tn \"{TaskName}\" /tr \"{taskCommand}\" /sc onlogon /rl highest /f";
-    logger?.Info("Creating scheduled task: schtasks {Args}", schtasksArgs);
-    Console.WriteLine($"Creating scheduled task '{TaskName}'...");
-
-    var process = Process.Start(new ProcessStartInfo
+    // D-1 auto-migration: silently uninstall any legacy FlaUI-MCP Windows Service
+    // before creating the scheduled task. Idempotent — no-op if absent.
+    if (ServiceManager.DoesServiceExist(ServiceName))
     {
-        FileName = "schtasks.exe",
-        Arguments = schtasksArgs,
-        UseShellExecute = false,
-        RedirectStandardOutput = true,
-        RedirectStandardError = true,
-        CreateNoWindow = true
-    });
-    process?.WaitForExit(30000);
-    var output = process?.StandardOutput.ReadToEnd()?.Trim();
-    var error = process?.StandardError.ReadToEnd()?.Trim();
-
-    if (process?.ExitCode == 0)
-    {
-        Console.WriteLine($"Scheduled task '{TaskName}' created. It will start FlaUI-MCP at user logon.");
-        Console.WriteLine("The task runs in the user session, so FlaUI can see desktop windows.");
-        logger?.Info("Scheduled task created successfully");
-    }
-    else
-    {
-        Console.WriteLine($"Failed to create scheduled task: {error ?? output}");
-        logger?.Error("Failed to create scheduled task: {Error}", error ?? output);
+        logger?.Info("Detected legacy FlaUI-MCP Windows Service — uninstalling before creating scheduled task");
+        try
+        {
+            ServiceManager.Uninstall(ServiceName, silent: true);
+        }
+        catch (Exception ex)
+        {
+            logger?.Error(ex, "Failed to auto-uninstall legacy service during --task migration");
+            Console.WriteLine($"WARNING: Failed to auto-uninstall legacy service: {ex.Message}");
+            Environment.Exit(1);
+        }
     }
 
-    Environment.Exit(process?.ExitCode ?? 1);
+    // Defensive idempotency: delete pre-existing task with same name
+    try { WinTaskSchedulerManager.Delete(TaskName); } catch { /* idempotent — ignore */ }
+
+    try
+    {
+        WinTaskSchedulerManager.CreateOnLogon(
+            name: TaskName,
+            description: "Starts FlaUI-MCP at user logon (runs in user desktop session)",
+            execFilePath: exeFilePath,
+            execArguments: "");
+        Console.WriteLine($"Scheduled task '{TaskName}' registered. Will start at next user logon.");
+        logger?.Info("Scheduled task '{Task}' registered", TaskName);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        logger?.Error(ex, "Failed to create scheduled task");
+        Console.WriteLine($"Failed to create scheduled task: {ex.Message}");
+        Environment.Exit(1);
+    }
 }
 
-if (removeTask)
+if (removeTask || uninstall)
 {
-    Console.WriteLine($"Removing scheduled task '{TaskName}'...");
-    var process = Process.Start(new ProcessStartInfo
+    // D-1 reverse rule: do NOT touch the service. The service should be gone
+    // already from a prior --task call, or never existed. Only remove the task.
+    try
     {
-        FileName = "schtasks.exe",
-        Arguments = $"/delete /tn \"{TaskName}\" /f",
-        UseShellExecute = false,
-        RedirectStandardOutput = true,
-        RedirectStandardError = true,
-        CreateNoWindow = true
-    });
-    process?.WaitForExit(30000);
-    var output = process?.StandardOutput.ReadToEnd()?.Trim();
-    var error = process?.StandardError.ReadToEnd()?.Trim();
-
-    if (process?.ExitCode == 0)
-    {
+        WinTaskSchedulerManager.Delete(TaskName);  // idempotent
         Console.WriteLine($"Scheduled task '{TaskName}' removed.");
-        logger?.Info("Scheduled task removed successfully");
+        logger?.Info("Scheduled task '{Task}' removed", TaskName);
+        Environment.Exit(0);
     }
-    else
+    catch (Exception ex)
     {
-        Console.WriteLine($"Failed to remove scheduled task: {error ?? output}");
-        logger?.Error("Failed to remove scheduled task: {Error}", error ?? output);
+        logger?.Error(ex, "Failed to remove scheduled task");
+        Console.WriteLine($"Failed to remove scheduled task: {ex.Message}");
+        Environment.Exit(1);
     }
-
-    Environment.Exit(process?.ExitCode ?? 1);
 }
 
 // === 10. Create shared services and run ===
