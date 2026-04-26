@@ -13,54 +13,18 @@ const string ServiceName = "FlaUI-MCP";
 const string FirewallRuleName = "FlaUI-MCP";
 const string TaskName = "FlaUI-MCP";
 
-// === 1. Parse command-line arguments ===
-var silent = false;
-var debug = false;
-var install = false;
-var uninstall = false;
-var console = false;
-var task = false;
-var removeTask = false;
-var transport = "sse";
-var port = 3020;
-var helpRequested = false;
-
-for (int i = 0; i < args.Length; i++)
-{
-    switch (args[i].ToLowerInvariant())
-    {
-        case "--install" or "-i":
-            install = true;
-            break;
-        case "--uninstall" or "-u":
-            uninstall = true;
-            break;
-        case "--silent" or "-s":
-            silent = true;
-            break;
-        case "--debug" or "-d":
-            debug = true;
-            break;
-        case "--console" or "-c":
-            console = true;
-            break;
-        case "--task":
-            task = true;
-            break;
-        case "--removetask":
-            removeTask = true;
-            break;
-        case "--transport" when i + 1 < args.Length:
-            transport = args[++i].ToLowerInvariant();
-            break;
-        case "--port" when i + 1 < args.Length:
-            if (int.TryParse(args[++i], out var p)) port = p;
-            break;
-        case "--help" or "-?":
-            helpRequested = true;
-            break;
-    }
-}
+// === 1. Parse command-line arguments (extracted to CliOptions for unit-testability) ===
+var opts = FlaUI.Mcp.CliOptions.Parse(args);
+var silent = opts.Silent;
+var debug = opts.Debug;
+var install = opts.Install;
+var uninstall = opts.Uninstall;
+var console = opts.Console;
+var task = opts.Task;
+var removeTask = opts.RemoveTask;
+var transport = opts.Transport;
+var port = opts.Port;
+var helpRequested = opts.Help;
 
 // === 1b. Re-attach to parent console under WinExe so Console.* writes are visible (TSK-04) ===
 if (console || install || uninstall || task || removeTask || helpRequested)

@@ -46,6 +46,17 @@
 - [ ] **TSK-08**: Console window sizing guarded against WinExe headless mode (no console attached)
 - [x] **TSK-09**: `--help` text updated to reflect Task Scheduler as primary registration method
 
+### Streamable HTTP Transport
+
+- [ ] **HTTP-01**: "--transport http" mounts Streamable HTTP on /mcp (POST/GET) via ModelContextProtocol.AspNetCore SDK
+- [ ] **HTTP-02**: "--transport sse" continues to mount legacy /sse and /messages endpoints
+- [ ] **HTTP-03**: Modern MCP client (Claude Code "type":"http") can initialize, list tools, and invoke a tool over /mcp
+- [ ] **HTTP-04**: Mcp-Session-Id header per spec — auto-issued on initialize, 400 if absent on subsequent, 404 if expired
+- [ ] **HTTP-05**: All 11 tools (Launch/Snapshot/Click/Type/Fill/GetText/Screenshot/ListWindows/FocusWindow/CloseWindow/Batch) callable on http and sse transports
+- [ ] **HTTP-06**: Default Kestrel bind = 127.0.0.1; --bind <addr> CLI escape hatch; policy applies to both http and sse
+- [ ] **HTTP-07**: Origin header rejected (HTTP 403) unless absent, "null", localhost, or 127.0.0.1
+- [ ] **HTTP-08**: Default transport flipped from sse to http; --help text updated
+
 ## v2 Requirements
 
 None planned.
@@ -96,12 +107,20 @@ None planned.
 | TSK-07 | Phase 3 | Complete |
 | TSK-08 | Phase 3 | Pending |
 | TSK-09 | Phase 3 | Complete |
+| HTTP-01 | Phase 4 | Pending |
+| HTTP-02 | Phase 4 | Pending |
+| HTTP-03 | Phase 4 | Pending |
+| HTTP-04 | Phase 4 | Pending |
+| HTTP-05 | Phase 4 | Pending |
+| HTTP-06 | Phase 4 | Pending |
+| HTTP-07 | Phase 4 | Pending |
+| HTTP-08 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 32 total
-- Mapped to phases: 32
+- v1 requirements: 40 total
+- Mapped to phases: 40
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after roadmap creation*
+*Last updated: 2026-04-26 after Phase 4 Wave 0 declaration*
