@@ -106,4 +106,38 @@ public sealed record CliOptions(
             Port: port,
             BindAddress: bindAddress);
     }
+
+    /// <summary>
+    /// Sibling parser to <see cref="Parse"/> that reports only the bind/port flags actually present
+    /// on the CLI. Returns <see cref="CliOverrides"/> whose fields are <c>null</c> when the flag was
+    /// not passed (so CLI presence is detected by <c>field is not null</c>, not by value comparison
+    /// against defaults). Used by <see cref="ConfigResolver"/> to give CLI strict precedence over
+    /// appsettings.json + env layers — including the case where the user passes <c>--bind 127.0.0.1</c>
+    /// (which matches the default) explicitly to override an appsettings.json value of <c>0.0.0.0</c>.
+    ///
+    /// Mirrors the loop and bounds-check semantics of <see cref="Parse"/> exactly. A malformed
+    /// <c>--port abc</c> yields <c>Port: null</c> (flag treated as absent), matching the same
+    /// <c>int.TryParse</c> behavior in <see cref="Parse"/>. All non-bind/non-port flags are ignored —
+    /// they have no override semantics for the layered config feature.
+    /// </summary>
+    public static CliOverrides ParseOverrides(string[] args)
+    {
+        string? bindAddress = null;
+        int? port = null;
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            switch (args[i].ToLowerInvariant())
+            {
+                case "--bind" when i + 1 < args.Length:
+                    bindAddress = args[++i];
+                    break;
+                case "--port" when i + 1 < args.Length:
+                    if (int.TryParse(args[++i], out var p)) port = p;
+                    break;
+            }
+        }
+
+        return new CliOverrides(BindAddress: bindAddress, Port: port);
+    }
 }

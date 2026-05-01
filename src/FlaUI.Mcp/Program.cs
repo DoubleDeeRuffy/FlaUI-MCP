@@ -15,6 +15,19 @@ const string TaskName = "FlaUI-MCP";
 
 // === 1. Parse command-line arguments (extracted to CliOptions for unit-testability) ===
 var opts = FlaUI.Mcp.CliOptions.Parse(args);
+var cliOverrides = FlaUI.Mcp.CliOptions.ParseOverrides(args);
+
+// === 1a. Layer config: defaults < appsettings.json < FLAUI_MCP_ env < CLI flags ===
+// File path anchored to FlaUI.Mcp.exe (matches LoggingConfig.LogDirectory convention),
+// not the working directory — survives Task Scheduler launches.
+var appsettingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+var (mergedBind, mergedPort) = FlaUI.Mcp.ConfigResolver.Resolve(
+    defaults: FlaUI.Mcp.CliOptions.Default,
+    appsettingsPath: appsettingsPath,
+    envOverride: null,
+    cli: cliOverrides);
+opts = opts with { BindAddress = mergedBind, Port = mergedPort };
+
 var silent = opts.Silent;
 var debug = opts.Debug;
 var install = opts.Install;
@@ -52,6 +65,10 @@ if (helpRequested)
     Console.WriteLine("  --bind <addr>       Kestrel bind address (default: 127.0.0.1; use 0.0.0.0 for LAN)");
     Console.WriteLine("  --port <number>     Listen port (default: 3020)");
     Console.WriteLine("  --help, -?          Show this help");
+    Console.WriteLine();
+    Console.WriteLine("Configuration sources (lowest -> highest precedence):");
+    Console.WriteLine("  defaults  <  appsettings.json (Server section)  <  env (FLAUI_MCP_Server__BindAddress, FLAUI_MCP_Server__Port)  <  --bind/--port");
+    Console.WriteLine("  appsettings.json is read from the directory containing FlaUI.Mcp.exe and is optional.");
     Console.WriteLine();
     Console.WriteLine("Aliases (compatibility with v0.x service-based scripts):");
     Console.WriteLine("  --install, -i       Same as --task");
