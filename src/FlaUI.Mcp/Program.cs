@@ -59,26 +59,36 @@ if (helpRequested)
     Environment.Exit(0);
 }
 
-// === 1c. Debugger guard: F5 from VS auto-enables -c -d, kills stale FlaUI.Mcp procs (TSK-05) ===
-if (Debugger.IsAttached)
+// === 1c. Always kill stale FlaUI.Mcp instances (excluding own PID) before any port-binding work. ===
+// Runs on every startup except --help (which already Environment.Exit(0)'d above).
+// NLog is not yet configured here — diagnostics go to stderr inside try/catch so failures never
+// abort startup. If a kill fails (race / AccessDenied), the later Kestrel bind will fail visibly,
+// which is the correct user-facing failure mode.
 {
-    console = true;
-    debug = true;
-
     var currentPid = Environment.ProcessId;
     foreach (var stale in Process.GetProcessesByName("FlaUI.Mcp")
                                  .Where(p => p.Id != currentPid))
     {
-        try
+        using (stale)
         {
-            stale.Kill();
-            stale.WaitForExit(5000);
-        }
-        catch
-        {
-            // Process may have exited between enumeration and kill — race is fine.
+            try
+            {
+                stale.Kill();
+                stale.WaitForExit(2000);
+            }
+            catch (Exception ex)
+            {
+                try { Console.Error.WriteLine($"FlaUI.Mcp: stale-kill skipped (pid={stale.Id}): {ex.Message}"); } catch { }
+            }
         }
     }
+}
+
+// === 1d. Debugger guard: F5 from VS auto-enables -c -d (TSK-05; stale-kill is now unconditional above) ===
+if (Debugger.IsAttached)
+{
+    console = true;
+    debug = true;
 }
 
 // === Register CodePages encoding provider (required for netsh/FirewallManager on German Windows) ===
