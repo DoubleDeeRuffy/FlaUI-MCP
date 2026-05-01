@@ -35,6 +35,7 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
 Source: "{#MyAppSourceFolder}\*"; Excludes: "appsettings.json"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs;
+Source: "{#MyAppSourceFolder}\appsettings.json"; DestDir: "{app}"; Flags: onlyifdoesntexist uninsneveruninstall;
 
 [InstallDelete]
 ;Type: files; Name: "{app}\*.dll";
