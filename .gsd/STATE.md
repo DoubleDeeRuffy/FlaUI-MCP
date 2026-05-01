@@ -17,7 +17,7 @@ See: .gsd/PROJECT.md (updated 2026-04-26)
 Phase: 4 of 4 (Streamable HTTP transport — complete)
 Plan: 4 of 4 complete
 Status: Milestone phases complete; quick-task 260430-aie (stale-process kill on startup) applied. Manual UAT pending.
-Last activity: 2026-04-30 — Completed quick task 260430-aie: fix the broken startup, the broken state if not started with "-c", taskkill old instances on startup
+Last activity: 2026-05-01 — Completed quick task 260501-nfb: Add appsettings.json support for listen IP and Port (CLI takes precedence)
 
 Progress: [██████████] 100% of planned phases
 
@@ -40,9 +40,10 @@ None tracked.
 | # | Description | Date | Commit | Status | Directory |
 |---|-------------|------|--------|--------|-----------|
 | 260430-aie | fix the broken startup, the broken state if not started with "-c", taskkill old instances on startup | 2026-04-30 | 210c7b2 | Verified | [260430-aie-fix-the-broken-startup-the-broken-state-](./milestones/1.0/quick/260430-aie-fix-the-broken-startup-the-broken-state-/) |
+| 260501-nfb | Add appsettings.json support for listen IP and Port (CLI takes precedence) | 2026-05-01 | 779c2cf | Verified | [260501-nfb-add-appsettings-json-support-for-listen-](./milestones/1.0/quick/260501-nfb-add-appsettings-json-support-for-listen-/) |
 
 ## Session Continuity
 
-Last session: 2026-04-30
-Stopped at: Quick task 260430-aie complete (commit 210c7b2). Manual UAT scenarios outstanding.
+Last session: 2026-05-01
+Stopped at: Quick task 260501-nfb complete (commit 779c2cf). Manual UAT scenarios for 260430-aie still outstanding.
 Resume file: None
