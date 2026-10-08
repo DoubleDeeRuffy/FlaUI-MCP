@@ -96,11 +96,11 @@ public static class ToolBridge
         {
             if (c.Type == "image" && c.Data != null)
             {
-                contents.Add(new ImageContentBlock
-                {
-                    Data = Convert.FromBase64String(c.Data),
-                    MimeType = c.MimeType ?? "image/png",
-                });
+                // ImageContentBlock.Data holds base64-encoded UTF-8 bytes, not raw image bytes;
+                // FromBytes takes the decoded bytes and encodes them correctly on the wire.
+                contents.Add(ImageContentBlock.FromBytes(
+                    Convert.FromBase64String(c.Data),
+                    c.MimeType ?? "image/png"));
             }
             else
             {
